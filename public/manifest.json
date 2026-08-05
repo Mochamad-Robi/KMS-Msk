@@ -1,0 +1,36 @@
+{
+    "name": "MSK PINTAR",
+    "short_name": "KMS Online",
+    "description": "Document & Knowledge Management System PT Mitra Sendang Kemakmuran",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#7f0d0d",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/assets/logoapk2.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/logoapk2.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/logoapk2.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/assets/logoapk2.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}
