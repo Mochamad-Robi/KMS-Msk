@@ -107,11 +107,12 @@
 
             @else
                 {{-- ===== NORMAL NEWS CARD ===== --}}
-                @if($news->image_path)
+                 @if($news->image_path)
                     <div class="h-80 overflow-hidden">
                         <img src="{{ route('media.serve', ['type' => explode('/', $news->image_path)[0], 'filename' => explode('/', $news->image_path)[1]]) }}"
                              alt="{{ $news->title }}"
-                             class="w-full h-full object-cover"/>
+                             onclick="openImageLightbox(this.src)"
+                             class="w-full h-full object-cover cursor-zoom-in hover:opacity-90 transition"/>
                     </div>
                 @else
                     <div class="h-40 bg-gradient-to-r from-primary-700 via-primary-800 to-primary-900 flex items-center justify-center">
@@ -394,5 +395,39 @@
     </div>
 
 </div>
+
+{{-- ===== LIGHTBOX GAMBAR FULL SIZE ===== --}}
+<div id="image-lightbox"
+     class="hidden fixed inset-0 z-50 items-center justify-center bg-black/85 p-4 cursor-zoom-out"
+     onclick="closeImageLightbox()">
+    <button type="button" onclick="closeImageLightbox()"
+            class="absolute top-4 right-4 text-white/80 hover:text-white text-3xl leading-none w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition">
+        &times;
+    </button>
+    <img id="image-lightbox-img" src="" alt="Preview"
+         class="max-w-full max-h-full object-contain rounded-lg shadow-2xl cursor-default"
+         onclick="event.stopPropagation()"/>
+</div>
+
+<script>
+    function openImageLightbox(src) {
+        const lightbox = document.getElementById('image-lightbox');
+        document.getElementById('image-lightbox-img').src = src;
+        lightbox.classList.remove('hidden');
+        lightbox.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageLightbox() {
+        const lightbox = document.getElementById('image-lightbox');
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeImageLightbox();
+    });
+</script>
 
 @endsection
