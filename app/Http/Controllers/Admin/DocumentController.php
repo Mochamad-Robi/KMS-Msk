@@ -36,7 +36,7 @@ class DocumentController extends Controller
     {
         $request->validate([
             'title'                    => 'required|string|max:255',
-            'category'                 => 'required|in:policy,roles,knowledge-base',
+            'category'                 => 'required|in:policy,roles,knowledge-base,explicit-knowledge,tacit-knowledge,knowledge-map',
             'sub_category'             => 'nullable|required_if:category,roles|in:struktur-organisasi,jobdesc',
             'type'                     => 'required|in:pdf,attachment,poster,info,banner',
             'file'                     => 'required|file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png|max:20480',

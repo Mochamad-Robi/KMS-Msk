@@ -43,6 +43,9 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/roles',              [DocumentController::class, 'roles'])->name('documents.roles');
     Route::get('/employee-info',      [DocumentController::class, 'employeeInfo'])->name('documents.employee-info');
     Route::get('/knowledge-base',     [DocumentController::class, 'knowledgeBase'])->name('documents.knowledge-base');
+    Route::get('/explicit-knowledge', [DocumentController::class, 'explicitKnowledge'])->name('documents.explicit-knowledge');
+    Route::get('/tacit-knowledge',    [DocumentController::class, 'tacitKnowledge'])->name('documents.tacit-knowledge');
+    Route::get('/knowledge-map',      [DocumentController::class, 'knowledgeMap'])->name('documents.knowledge-map');
     Route::get('/documents/{id}',     [DocumentController::class, 'show'])->name('documents.show');
     Route::get('/documents/{id}/pdf', [DocumentController::class, 'servePdf'])->name('documents.pdf');
 

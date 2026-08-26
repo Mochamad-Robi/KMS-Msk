@@ -17,6 +17,16 @@ class Document extends Model
     'jobdesk'             => 'Job desc',
 ];
 
+  // Sub-kategori Explicit & Tacit Knowledge — kosong dulu, tinggal isi array-nya
+    // kapan saja tanpa perlu migration baru kalau sudah fix daftarnya
+    const SUB_CATEGORIES_EXPLICIT = [
+        // 'contoh-key' => 'Contoh Label',
+    ];
+
+    const SUB_CATEGORIES_TACIT = [
+        // 'contoh-key' => 'Contoh Label',
+    ];
+
     protected $casts = [
         'is_active'                  => 'boolean',
         'show_on_dashboard'          => 'boolean',

@@ -46,6 +46,9 @@
                             <option value="policy"         {{ old('category') === 'policy' ? 'selected' : '' }}>Policy</option>
                             <option value="roles"          {{ old('category') === 'roles' ? 'selected' : '' }}>Rules & Responsibilities</option>
                             <option value="knowledge-base" {{ old('category') === 'knowledge-base' ? 'selected' : '' }}>Knowledge Base</option>
+                            <option value="explicit-knowledge" {{ old('category') === 'explicit-knowledge' ? 'selected' : '' }}>Explicit Knowledge</option>
+                            <option value="tacit-knowledge" {{ old('category') === 'tacit-knowledge' ? 'selected' : '' }}>Tacit Knowledge</option>
+                            <option value="knowledge-map" {{ old('category') === 'knowledge-map' ? 'selected' : '' }}>Knowledge Map</option>
                         </select>
                     </div>
                     <div>

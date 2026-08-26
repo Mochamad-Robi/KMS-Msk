@@ -176,8 +176,9 @@
                         @endfor
                     </div>
                     
-                    {{-- Container PDF — iframe baru dibuat via JS setelah user klik "Buka Dokumen" --}}
-                    <div id="document-frame-container" data-pdf-url="{{ route('documents.pdf', $document->id) }}" style="height: 80vh;"></div>
+                    {{-- Container PDF — dirender via PDF.js (canvas) setelah user klik "Buka Dokumen", TANPA toolbar bawaan browser --}}
+                    <div id="document-frame-container" data-pdf-url="{{ route('documents.pdf', $document->id) }}"
+                         style="max-height: 85vh; overflow-y: auto;"></div>
 
                 @elseif($isImage)
                     {{-- Watermark overlay --}}
@@ -194,6 +195,36 @@
                      {{-- Container gambar — img baru dibuat via JS setelah user klik "Buka Dokumen" --}}
                     <div id="document-frame-container" data-pdf-url="{{ route('documents.pdf', $document->id) }}"
                          class="flex items-center justify-center p-6" style="min-height: 60vh;"></div>
+
+                               @elseif($ext === 'docx')
+                    {{-- Watermark overlay --}}
+                    <div class="absolute inset-0 pointer-events-none z-10 overflow-hidden select-none">
+                        @for($i = 0; $i < 6; $i++)
+                            <div class="absolute w-full text-center"
+                                 style="top: {{ 10 + ($i * 16) }}%; transform: rotate(-30deg); opacity: 0.06;">
+                                <span class="text-gray-800 font-bold text-xl tracking-widest whitespace-nowrap">
+                                    {{ $watermark }} &nbsp;&nbsp;&nbsp; {{ $watermark }}
+                                </span>
+                            </div>
+                        @endfor
+                    </div>
+                    <div id="office-preview-container" data-file-url="{{ route('documents.pdf', $document->id) }}"
+                         data-file-ext="docx" class="p-8 overflow-auto bg-white" style="max-height: 85vh;"></div>
+
+                @elseif(in_array($ext, ['xlsx', 'xls']))
+                    {{-- Watermark overlay --}}
+                    <div class="absolute inset-0 pointer-events-none z-10 overflow-hidden select-none">
+                        @for($i = 0; $i < 6; $i++)
+                            <div class="absolute w-full text-center"
+                                 style="top: {{ 10 + ($i * 16) }}%; transform: rotate(-30deg); opacity: 0.06;">
+                                <span class="text-gray-800 font-bold text-xl tracking-widest whitespace-nowrap">
+                                    {{ $watermark }} &nbsp;&nbsp;&nbsp; {{ $watermark }}
+                                </span>
+                            </div>
+                        @endfor
+                    </div>
+                    <div id="office-preview-container" data-file-url="{{ route('documents.pdf', $document->id) }}"
+                         data-file-ext="{{ $ext }}" class="p-6 overflow-auto bg-white" style="max-height: 85vh;"></div>
 
                @elseif($isOffice)
         <div class="flex flex-col items-center justify-center py-16 px-6" style="min-height: 60vh;">
@@ -292,7 +323,136 @@
 @endsection
 
 @push('scripts')
+
+@if($isPdf)
+<script type="module">
+    import * as pdfjsLib from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.mjs';
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+
+    window.renderPdfWithPdfJs = async function (url, container) {
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-20">
+                <svg class="animate-spin w-8 h-8 text-primary-700 mb-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <p class="text-sm text-gray-400">Memuat dokumen...</p>
+            </div>`;
+
+        try {
+            const pdf = await pdfjsLib.getDocument(url).promise;
+
+            container.innerHTML = '';
+            container.style.background = '#525659';
+            container.style.padding = '16px 0';
+
+            for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+                const page = await pdf.getPage(pageNum);
+                const containerWidth = container.clientWidth || 800;
+                const unscaledViewport = page.getViewport({ scale: 1 });
+                const scale = (containerWidth - 32) / unscaledViewport.width;
+                const viewport = page.getViewport({ scale: scale });
+
+                const canvas = document.createElement('canvas');
+                canvas.className = 'mx-auto block shadow-lg mb-4 bg-white';
+                canvas.oncontextmenu = () => false;
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+
+                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                container.appendChild(canvas);
+            }
+        } catch (err) {
+            console.error('PDF.js render error:', err);
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-16 px-6">
+                    <p class="text-red-500 text-sm">Gagal memuat pratinjau PDF. Silakan hubungi Admin.</p>
+                </div>`;
+        }
+    };
+</script>
+@endif
+
+@if($ext === 'docx')
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx-preview@0.3.7/dist/docx-preview.min.js"></script>
+@elseif(in_array($ext, ['xlsx', 'xls']))
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+@endif
+
 <script>
+    window.renderOfficePreview = async function (url, container, ext) {
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-20">
+                <svg class="animate-spin w-8 h-8 text-primary-700 mb-3" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                <p class="text-sm text-gray-400">Memuat pratinjau dokumen...</p>
+            </div>`;
+
+        try {
+            const response    = await fetch(url);
+            const arrayBuffer = await response.arrayBuffer();
+
+            if (ext === 'docx') {
+                container.innerHTML = '';
+                await docx.renderAsync(arrayBuffer, container, container, {
+                    inWrapper: true,
+                    ignoreWidth: false,
+                    ignoreHeight: false,
+                });
+            } else if (ext === 'xlsx' || ext === 'xls') {
+                const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                container.innerHTML = '';
+
+                if (workbook.SheetNames.length > 1) {
+                    const tabs = document.createElement('div');
+                    tabs.className = 'flex gap-1 mb-4 border-b border-gray-200 flex-wrap';
+                    workbook.SheetNames.forEach((name, idx) => {
+                        const tab = document.createElement('button');
+                        tab.type = 'button';
+                        tab.textContent = name;
+                        tab.className = idx === 0
+                            ? 'px-3 py-1.5 text-xs font-semibold rounded-t-lg bg-primary-700 text-white'
+                            : 'px-3 py-1.5 text-xs font-semibold rounded-t-lg bg-gray-100 text-gray-600 hover:bg-gray-200';
+                        tab.onclick = () => {
+                            container.querySelectorAll('.xlsx-sheet-content').forEach(el => el.classList.add('hidden'));
+                            document.getElementById('xlsx-sheet-' + idx).classList.remove('hidden');
+                            tabs.querySelectorAll('button').forEach(b => {
+                                b.className = 'px-3 py-1.5 text-xs font-semibold rounded-t-lg bg-gray-100 text-gray-600 hover:bg-gray-200';
+                            });
+                            tab.className = 'px-3 py-1.5 text-xs font-semibold rounded-t-lg bg-primary-700 text-white';
+                        };
+                        tabs.appendChild(tab);
+                    });
+                    container.appendChild(tabs);
+                }
+
+                workbook.SheetNames.forEach((name, idx) => {
+                    const sheetDiv = document.createElement('div');
+                    sheetDiv.id = 'xlsx-sheet-' + idx;
+                    sheetDiv.className = 'xlsx-sheet-content text-xs' + (idx === 0 ? '' : ' hidden');
+                    sheetDiv.innerHTML = XLSX.utils.sheet_to_html(workbook.Sheets[name]);
+                    container.appendChild(sheetDiv);
+                });
+
+                container.querySelectorAll('table').forEach(t => {
+                    t.classList.add('border-collapse', 'w-full');
+                    t.querySelectorAll('td, th').forEach(cell => {
+                        cell.classList.add('border', 'border-gray-200', 'px-2', 'py-1');
+                    });
+                });
+            }
+        } catch (err) {
+            console.error('Office preview render error:', err);
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-16 px-6">
+                    <p class="text-red-500 text-sm">Gagal memuat pratinjau dokumen. Silakan hubungi Admin.</p>
+                </div>`;
+        }
+    };
+
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && ['p','s','u'].includes(e.key.toLowerCase())) {
@@ -345,11 +505,10 @@
                 const isPdfType = @json($isPdf);
 
                 if (isPdfType) {
-                    const iframe = document.createElement('iframe');
-                    iframe.src = container.dataset.pdfUrl;
-                    iframe.className = 'w-full h-full border-0';
-                    container.appendChild(iframe);
-                } else {
+                    if (window.renderPdfWithPdfJs) {
+                        window.renderPdfWithPdfJs(container.dataset.pdfUrl, container);
+                    }
+            } else {
                     const img = document.createElement('img');
                     img.src = container.dataset.pdfUrl;
                     img.alt = @json($document->title);
@@ -357,6 +516,11 @@
                     img.oncontextmenu = () => false;
                     container.appendChild(img);
                 }
+            }
+
+            const officeContainer = document.getElementById('office-preview-container');
+            if (officeContainer && officeContainer.dataset.fileUrl && window.renderOfficePreview) {
+                window.renderOfficePreview(officeContainer.dataset.fileUrl, officeContainer, officeContainer.dataset.fileExt);
             }
         });
 

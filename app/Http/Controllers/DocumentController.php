@@ -76,6 +76,45 @@ class DocumentController extends Controller
         return view('documents.index', compact('documents', 'title'));
     }
 
+     public function explicitKnowledge()
+    {
+        $activeSubCategory = request('sub_category', 'all');
+
+        $documents = $this->getDocuments('explicit-knowledge');
+
+        if ($activeSubCategory !== 'all') {
+            $documents = $documents->filter(fn($d) => $d->sub_category === $activeSubCategory);
+        }
+
+        $title         = 'Explicit Knowledge';
+        $subCategories = Document::SUB_CATEGORIES_EXPLICIT;
+
+        return view('documents.index', compact('documents', 'title', 'subCategories', 'activeSubCategory'));
+    }
+
+    public function tacitKnowledge()
+    {
+        $activeSubCategory = request('sub_category', 'all');
+
+        $documents = $this->getDocuments('tacit-knowledge');
+
+        if ($activeSubCategory !== 'all') {
+            $documents = $documents->filter(fn($d) => $d->sub_category === $activeSubCategory);
+        }
+
+        $title         = 'Tacit Knowledge';
+        $subCategories = Document::SUB_CATEGORIES_TACIT;
+
+        return view('documents.index', compact('documents', 'title', 'subCategories', 'activeSubCategory'));
+    }
+
+    public function knowledgeMap()
+    {
+        $documents = $this->getDocuments('knowledge-map');
+        $title     = 'Knowledge Map';
+        return view('documents.index', compact('documents', 'title'));
+    }
+
     public function show($id)
     {
         $user     = Auth::user();
@@ -91,7 +130,7 @@ class DocumentController extends Controller
             ['document_id' => $document->id, 'user_id' => $user->id],
             [
                 'read_at'        => now(),
-                'watermark_text' => $user->name . ' — ' . $user->employee_id,
+                'watermark_text' => $user->name . ' | ' . $user->employee_id,
                 'ip_address'     => request()->ip(),
             ]
         );
@@ -139,12 +178,12 @@ class DocumentController extends Controller
             return back()->with('error', 'Dokumen ini tidak memerlukan acknowledgement.');
         }
 
-        DocumentRead::updateOrCreate(
+         DocumentRead::updateOrCreate(
             ['document_id' => $document->id, 'user_id' => $user->id],
             [
                 'read_at'          => now(),
                 'acknowledged_at'  => now(),
-                'watermark_text'   => $user->name . ' — ' . $user->employee_id,
+                'watermark_text'   => $user->name . ' | ' . $user->employee_id,
                 'ip_address'       => request()->ip(),
             ]
         );
