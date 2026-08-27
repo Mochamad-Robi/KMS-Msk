@@ -162,8 +162,23 @@ class DocumentController extends Controller
             abort(404, 'File tidak ditemukan.');
         }
 
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+
+        $mimeMap = [
+            'pdf'  => 'application/pdf',
+            'jpg'  => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png'  => 'image/png',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'doc'  => 'application/msword',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xls'  => 'application/vnd.ms-excel',
+            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'ppt'  => 'application/vnd.ms-powerpoint',
+        ];
+
         return response()->file($path, [
-            'Content-Type'        => 'application/pdf',
+            'Content-Type'        => $mimeMap[$ext] ?? 'application/octet-stream',
             'Content-Disposition' => 'inline',
             'Cache-Control'       => 'no-store, no-cache',
         ]);

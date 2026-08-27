@@ -98,26 +98,29 @@
                         <span class="sidebar-text">{{ __('app.knowledge_base') }}</span>
                     </a>
                 </li>
-                 <li>
-                    <a href="{{ route('documents.explicit-knowledge') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                              {{ request()->routeIs('documents.explicit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <span class="sidebar-text">Explicit</span>
-                    </a>
-                </li>
                 <li>
-                    <a href="{{ route('documents.tacit-knowledge') }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
-                              {{ request()->routeIs('documents.tacit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                        <span class="sidebar-text">Tacit</span>
-                    </a>
-                </li>
+    <a href="{{ route('documents.explicit-knowledge') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
+              {{ request()->routeIs('documents.explicit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 8h8M8 12h8M8 16h5"/>
+        </svg>
+        <span class="sidebar-text">Explicit</span>
+    </a>
+</li>
+
+<li>
+    <a href="{{ route('documents.tacit-knowledge') }}"
+       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
+              {{ request()->routeIs('documents.tacit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="12" cy="8" r="4" stroke-width="2"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 21a8 8 0 0116 0"/>
+        </svg>
+        <span class="sidebar-text">Tacit</span>
+    </a>
+</li>
                 <li>
                     <a href="{{ route('documents.knowledge-map') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
@@ -391,8 +394,8 @@
                 <li><a href="{{ route('documents.policy') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.policy') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>{{ __('app.policy') }}</a></li>
                 <li><a href="{{ route('documents.roles') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.roles') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>{{ __('app.rules') }}</a></li>
                 <li><a href="{{ route('documents.knowledge-base') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.knowledge-base') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>{{ __('app.knowledge_base') }}</a></li>
-                <li><a href="{{ route('documents.explicit-knowledge') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.explicit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>Explicit Knowledge</a></li>
-                <li><a href="{{ route('documents.tacit-knowledge') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.tacit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>Tacit Knowledge</a></li>
+                <li><a href="{{ route('documents.explicit-knowledge') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.explicit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h12a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 8h8M8 12h8M8 16h5"/></svg>Explicit Knowledge</a></li>
+                <li><a href="{{ route('documents.tacit-knowledge') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.tacit-knowledge') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke-width="2"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 21a8 8 0 0116 0"/></svg>Tacit Knowledge</a></li>
                 <li><a href="{{ route('documents.knowledge-map') }}" onclick="closeMobileDrawer()" class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition {{ request()->routeIs('documents.knowledge-map') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}"><svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>Knowledge Map</a></li>
 
 
@@ -539,7 +542,7 @@
                                     <div class="flex items-start gap-3">
                                         <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 mt-0.5
                                             {{ $notif->type === 'birthday' ? 'bg-pink-100' : ($notif->type === 'document' ? 'bg-blue-100' : ($notif->type === 'news' ? 'bg-yellow-100' : ($notif->type === 'reminder' ? 'bg-orange-100' : 'bg-primary-50'))) }}">
-                                            <span class="text-xs">{{ $notif->type === 'birthday' ? '🎂' : ($notif->type === 'document' ? '📄' : ($notif->type === 'news' ? '📰' : ($notif->type === 'reminder' ? '📋' : '📢'))) }}</span>
+                                            <span class="text-xs">{{ $notif->type === 'birthday' ? '??' : ($notif->type === 'document' ? '??' : ($notif->type === 'news' ? '??' : ($notif->type === 'reminder' ? '??' : '??'))) }}</span>
                                         </div>
                                         <div class="flex-1 min-w-0">
                                             <p class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ $notif->title }}</p>

@@ -43,12 +43,22 @@ class NewsController extends Controller
         return view('news.index', compact('news', 'categories', 'subCategories', 'activeCategory', 'activeSubCategory'));
     }
 
-    public function show($id)
+        public function show($id)
     {
+        $user = Auth::user();
+
         $news = News::with(['comments.user', 'birthdayUser.department'])
                     ->withCount('comments')
-                    ->active()
                     ->findOrFail($id);
+
+        $isVisible = $news->is_active
+            && (is_null($news->publish_at) || $news->publish_at->lte(now()))
+            && (is_null($news->expire_at)  || $news->expire_at->gte(now()->startOfDay()));
+
+        // User biasa tidak boleh membuka berita yang belum/sudah tidak tayang
+        if (!$isVisible && !$user->isAdmin() && !$user->isSuperUser()) {
+            return view('news.unavailable', compact('news'));
+        }
 
         $news->incrementViews();
 
@@ -61,7 +71,7 @@ class NewsController extends Controller
 
         $comments = $news->comments;
 
-        return view('news.show', compact('news', 'comments'));
+        return view('news.show', compact('news', 'comments', 'isVisible'));
     }
 
     public function comment(Request $request, $id)

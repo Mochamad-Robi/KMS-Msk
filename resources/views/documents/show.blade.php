@@ -395,13 +395,47 @@
             const response    = await fetch(url);
             const arrayBuffer = await response.arrayBuffer();
 
-            if (ext === 'docx') {
+                        if (ext === 'docx') {
                 container.innerHTML = '';
                 await docx.renderAsync(arrayBuffer, container, container, {
                     inWrapper: true,
                     ignoreWidth: false,
                     ignoreHeight: false,
                 });
+
+                // Cek apakah ada gambar yang gagal di-load (EMF/WMF tidak didukung browser)
+                setTimeout(function () {
+                    const imgs = container.querySelectorAll('img');
+                    let broken = 0;
+                    imgs.forEach(function (img) {
+                        if (img.complete && img.naturalWidth === 0) broken++;
+                    });
+
+                    const textLength = (container.innerText || '').trim().length;
+                    const htmlLength = container.innerHTML.length;
+
+                    // Kosong visual: tidak ada gambar & teks sangat sedikit padahal DOM besar
+                    // (ciri khas dokumen berisi SmartArt/shape yang tidak didukung docx-preview)
+                    const visuallyEmpty = imgs.length === 0 && textLength < 150 && htmlLength > 2000;
+
+                    if (broken > 0 || visuallyEmpty) {
+                        container.innerHTML = `
+                            <div class="flex flex-col items-center justify-center py-16 px-6 text-center">
+                                <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                </svg>
+                                <p class="text-gray-600 dark:text-gray-300 text-sm font-semibold mb-1">
+                                    Dokumen tidak dapat ditampilkan
+                                </p>
+                                <p class="text-gray-400 text-xs max-w-sm leading-relaxed">
+                                    Dokumen ini berisi diagram atau gambar yang tidak didukung untuk pratinjau di browser.
+                                    Silakan hubungi Admin untuk meminta versi PDF dari dokumen ini.
+                                </p>
+                            </div>`;
+                    }
+                }, 800);
+
             } else if (ext === 'xlsx' || ext === 'xls') {
                 const workbook = XLSX.read(arrayBuffer, { type: 'array' });
                 container.innerHTML = '';

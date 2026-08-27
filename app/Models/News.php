@@ -50,16 +50,16 @@ class News extends Model
         $this->increment('views_count');
     }
 
-    public function scopeActive($query)
+       public function scopeActive($query)
     {
         return $query->where('is_active', true)
                      ->where(function ($q) {
                          $q->whereNull('publish_at')
-                           ->orWhere('publish_at', '<=', now());
+                           ->orWhereDate('publish_at', '<=', now());
                      })
                      ->where(function ($q) {
                          $q->whereNull('expire_at')
-                           ->orWhere('expire_at', '>=', now());
+                           ->orWhereDate('expire_at', '>=', now());
                      });
     }
 
