@@ -137,7 +137,7 @@
                     <p class="sidebar-text text-xs text-gray-400 dark:text-gray-500 uppercase px-3 mb-1 font-semibold tracking-wider">Menu</p>
                 </li>
                 @if(Auth::user()->isKadept())
-                <li>
+                <li class="hidden">
                     <a href="{{ route('kpi.kadept.index') }}"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
                               {{ request()->routeIs('kpi.kadept.*') ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">
