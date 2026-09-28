@@ -298,7 +298,7 @@
                 </li>
 
                 @php $isKpiActive = request()->routeIs('admin.kpi.*'); @endphp
-                <li>
+                <li class="hidden">
                     <button onclick="toggleKpiMenu()"
                             class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition
                                 {{ $isKpiActive ? 'bg-primary-700 text-white' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800' }}">

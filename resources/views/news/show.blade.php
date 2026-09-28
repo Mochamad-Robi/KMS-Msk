@@ -16,7 +16,7 @@
         'poster'        => 'Poster',
         'himbauan'      => 'Himbauan',
         'promosi-umkm'  => 'Promosi UMKM',
-        'birthday'      => 'Ulang Tahun 🎂',
+        'birthday'      => 'Ulang Tahun ',
     ];
 @endphp
 
@@ -42,7 +42,7 @@
                 <div class="relative bg-gradient-to-br from-pink-400 via-pink-500 to-rose-500 p-8 text-center overflow-hidden">
                     {{-- Background decorations --}}
                     <div class="absolute inset-0 opacity-10 text-8xl flex items-center justify-center select-none pointer-events-none">
-                        🎂🎉🎊🎈
+                         &#127874;&#127881;&#127882;&#127874;
                     </div>
 
                     {{-- Avatar --}}
@@ -59,7 +59,7 @@
                             </div>
                         @endif
                         <div class="absolute -bottom-1 -right-1 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-lg shadow-lg" style="left: calc(50% + 42px)">
-                            🎂
+                            &#127874;
                         </div>
                     </div>
 
@@ -69,11 +69,11 @@
                             {{ $news->birthdayUser?->name }}
                         </h1>
                         <p class="text-pink-100 text-sm mb-2">
-                            {{ $news->birthdayUser?->department?->name ?? '-' }} • {{ $news->birthdayUser?->position?->name ?? '-' }}
+                            {{ $news->birthdayUser?->department?->name ?? '-' }} &bull {{ $news->birthdayUser?->position?->name ?? '-' }}
                         </p>
                         @if($news->birthdayUser?->birth_date)
                             <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur rounded-full px-4 py-1.5 text-white text-sm font-semibold">
-                                🎉 Ulang Tahun ke-{{ $news->birthdayUser->birth_date->age }}
+                                 &#127874; Ulang Tahun ke-{{ $news->birthdayUser->birth_date->age }}
                             </div>
                         @endif
                     </div>
@@ -83,7 +83,7 @@
                     {{-- Stats --}}
                     <div class="flex items-center flex-wrap gap-3 mb-4">
                         <span class="text-white text-xs font-bold px-3 py-1 rounded-full bg-pink-500">
-                            Ulang Tahun 🎂
+                            Ulang Tahun &#127874;
                         </span>
                         <span class="text-gray-400 text-xs flex items-center gap-1">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +116,7 @@
                     </div>
                 @else
                     <div class="h-40 bg-gradient-to-r from-primary-700 via-primary-800 to-primary-900 flex items-center justify-center">
-                        <span class="text-6xl opacity-20">📰</span>
+                         <span class="text-6xl opacity-20">&#128240;</span>
                     </div>
                 @endif
 
@@ -189,7 +189,7 @@
         <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
             <h3 class="font-bold text-gray-800 text-base mb-5 flex items-center gap-2">
                 @if($news->isBirthday())
-                    🎉 Ucapan Selamat
+                    &#127881; Ucapan Selamat
                 @else
                     <svg class="w-4 h-4 text-primary-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
@@ -217,7 +217,7 @@
                     @endif
                     <div class="flex-1">
                         <textarea name="comment" rows="3" required
-                                  placeholder="{{ $news->isBirthday() ? 'Tulis ucapan selamat ulang tahun... 🎉' : 'Tulis komentarmu di sini...' }}"
+                                  placeholder="{{ $news->isBirthday() ? 'Tulis ucapan selamat ulang tahun... &#127881;' : 'Tulis komentarmu di sini...' }}"
                                   class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-700 resize-none bg-gray-50 focus:bg-white transition"></textarea>
                         <div class="flex justify-end mt-2">
                             <button type="submit"
@@ -271,7 +271,7 @@
                 </div>
             @else
                 <div class="text-center py-8">
-                    <div class="text-4xl mb-2">{{ $news->isBirthday() ? '🎉' : '💬' }}</div>
+                    <div class="text-4xl mb-2">{!! $news->isBirthday() ? '&#127881;' : '&#128172;' !!}</div>
                     <p class="text-gray-400 text-sm">
                         {{ $news->isBirthday() ? 'Belum ada ucapan. Jadilah yang pertama mengucapkan!' : 'Belum ada komentar. Jadilah yang pertama!' }}
                     </p>
@@ -308,7 +308,7 @@
                         </div>
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-400">Umur</span>
-                            <span class="font-semibold text-pink-600">{{ $news->birthdayUser->birth_date->age }} tahun 🎂</span>
+                            <span class="font-semibold text-pink-600">{{ $news->birthdayUser->birth_date->age }} tahun &#127874;</span>
                         </div>
                     @endif
                     <div class="pt-3 border-t border-gray-100 grid grid-cols-2 gap-3">
@@ -375,9 +375,9 @@
                                 <img src="{{ route('media.serve', ['type' => explode('/', $other->image_path)[0], 'filename' => explode('/', $other->image_path)[1]]) }}"
                                      class="w-full h-full object-cover"/>
                             @elseif($other->isBirthday())
-                                <span class="text-2xl">🎂</span>
+                                <span class="text-2xl">&#127874;</span>
                             @else
-                                <span class="text-xl">📰</span>
+                                <span class="text-xl">&#128240;</span>
                             @endif
                         </div>
                         <div class="flex-1 min-w-0">
