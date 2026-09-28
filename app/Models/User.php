@@ -1,15 +1,17 @@
 <?php
 
 namespace App\Models;
+use NotificationChannels\WebPush\HasPushSubscriptions;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\LoginAttempt;
 use App\Models\Grade;
 
+
 class User extends Authenticatable
 {
-    use Notifiable;
+        use Notifiable, HasPushSubscriptions;
 
   protected $fillable = [
     'employee_id', 'name', 'email', 'password',

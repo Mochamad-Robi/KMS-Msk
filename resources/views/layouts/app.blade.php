@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#7f0d0d">
 
     {{-- PWA --}}
@@ -632,6 +633,33 @@
         {{-- Page Content --}}
         <main class="flex-1 p-4 md:p-6 pb-24 md:pb-6">
 
+            {{-- Banner izin notifikasi — muncul kalau user belum kasih izin --}}
+            <div id="push-permission-banner"
+                 class="hidden bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl px-4 py-3 mb-4 md:mb-6 flex items-center gap-3">
+                <div class="w-9 h-9 bg-blue-100 dark:bg-blue-800 rounded-lg flex items-center justify-center shrink-0">
+                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Aktifkan Notifikasi</p>
+                    <p class="text-xs text-blue-600 dark:text-blue-300 mt-0.5">
+                        Dapatkan pemberitahuan dokumen baru, berita, dan pengingat langsung di perangkat Anda.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="document.getElementById('push-permission-banner').remove()"
+                            class="text-xs text-blue-500 dark:text-blue-400 hover:underline px-2 py-2">
+                        Nanti
+                    </button>
+                    <button type="button" onclick="enablePushNotification()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition">
+                        Aktifkan
+                    </button>
+                </div>
+            </div>
+
             @if(session('success'))
                 <div data-auto-hide class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 text-green-700 dark:text-green-400 rounded-lg px-4 py-3 mb-4 md:mb-6 text-sm flex items-center gap-2">
                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -850,18 +878,100 @@ document.addEventListener('submit', function () {
         updateDarkModeIcon(isDark);
     })();
 
-    // ===== PWA Service Worker =====
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function () {
-        navigator.serviceWorker.register('/sw.js')
-            .then(function (registration) {
-                console.log('Service Worker registered:', registration.scope);
-            })
-            .catch(function (error) {
-                console.log('Service Worker registration failed:', error);
+    // ===== PWA Service Worker + Push Notification =====
+    const VAPID_PUBLIC_KEY = @json(config('webpush.vapid.public_key'));
+
+    function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64  = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+        const raw     = window.atob(base64);
+        const output  = new Uint8Array(raw.length);
+        for (let i = 0; i < raw.length; ++i) output[i] = raw.charCodeAt(i);
+        return output;
+    }
+
+    async function subscribeToPush(registration) {
+        if (!VAPID_PUBLIC_KEY) {
+            console.log('VAPID public key belum di-set.');
+            return;
+        }
+
+        try {
+            let subscription = await registration.pushManager.getSubscription();
+
+            if (!subscription) {
+                subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+                });
+            }
+
+            const raw = subscription.toJSON();
+
+            await fetch("{{ route('push.subscribe') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({
+                    endpoint: raw.endpoint,
+                    keys: raw.keys,
+                }),
             });
+
+            console.log('Push subscription tersimpan.');
+        } catch (err) {
+            console.error('Gagal subscribe push:', err);
+        }
+    }
+
+    async function enablePushNotification() {
+        if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+            alert('Browser ini tidak mendukung push notification.');
+            return;
+        }
+
+        const permission = await Notification.requestPermission();
+
+        if (permission === 'granted') {
+            const registration = await navigator.serviceWorker.ready;
+            await subscribeToPush(registration);
+            document.getElementById('push-permission-banner')?.remove();
+        } else if (permission === 'denied') {
+            alert('Izin notifikasi ditolak. Aktifkan lewat pengaturan browser kalau berubah pikiran.');
+            document.getElementById('push-permission-banner')?.remove();
+        }
+    }
+
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+            navigator.serviceWorker.register('/sw.js')
+                .then(async function (registration) {
+                    console.log('Service Worker registered:', registration.scope);
+
+                    // Kalau user sudah pernah kasih izin, perbarui subscription diam-diam
+                    if (Notification.permission === 'granted') {
+                        await subscribeToPush(registration);
+                    }
+                })
+                .catch(function (error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
+    }
+
+        // Tampilkan banner izin notifikasi kalau user belum memutuskan
+    document.addEventListener('DOMContentLoaded', function () {
+        const banner = document.getElementById('push-permission-banner');
+        if (!banner) return;
+
+        const supported = ('serviceWorker' in navigator) && ('PushManager' in window) && ('Notification' in window);
+
+        if (supported && Notification.permission === 'default') {
+            banner.classList.remove('hidden');
+        }
     });
-}
     </script>
     
 

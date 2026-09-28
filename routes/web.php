@@ -79,6 +79,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/notifications',           [NotificationController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{id}/read', [NotificationController::class, 'read'])->name('notifications.read');
     Route::post('/notifications/read-all', [NotificationController::class, 'readAll'])->name('notifications.readAll');
+    
+    // Push Notification (PWA)
+    Route::post('/push-subscription',   [\App\Http\Controllers\PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    Route::delete('/push-subscription', [\App\Http\Controllers\PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 
     // Portal News
     Route::get('/news',                    [NewsController::class, 'index'])->name('news.index');

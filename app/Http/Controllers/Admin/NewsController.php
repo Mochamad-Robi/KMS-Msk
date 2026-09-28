@@ -9,6 +9,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Notifications\PushNotification;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 
 class NewsController extends Controller
 {
@@ -24,64 +26,76 @@ class NewsController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'title'        => 'required|string|max:255',
-        'category'     => 'required|in:pemberitahuan,himbauan,promosi-umkm',
-        'sub_category' => 'nullable|required_if:category,promosi-umkm|in:food-beverage,otomotif,properti,gadget',
-        'content'      => 'nullable|string',
-        'image'        => 'nullable|file|mimes:jpg,jpeg,png|max:5120',
-        'publish_at'   => 'nullable|date',
-        'expire_at'    => 'nullable|date|after_or_equal:publish_at',
-    ]);
+    {
+        $request->validate([
+            'title'        => 'required|string|max:255',
+            'category'     => 'required|in:pemberitahuan,himbauan,promosi-umkm',
+            'sub_category' => 'nullable|required_if:category,promosi-umkm|in:food-beverage,otomotif,properti,gadget',
+            'content'      => 'nullable|string',
+            'image'        => 'nullable|file|mimes:jpg,jpeg,png|max:5120',
+            'publish_at'   => 'nullable|date',
+            'expire_at'    => 'nullable|date|after_or_equal:publish_at',
+        ]);
 
-    $imagePath = null;
-    if ($request->hasFile('image')) {
-        $file      = $request->file('image');
-        $filename  = time() . '_' . str($request->title)->slug() . '.' . $file->getClientOriginalExtension();
-        $imagePath = $file->storeAs('news', $filename);
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file      = $request->file('image');
+            $filename  = time() . '_' . str($request->title)->slug() . '.' . $file->getClientOriginalExtension();
+            $imagePath = $file->storeAs('news', $filename);
+        }
+
+        $news = News::create([
+            'title'        => $request->title,
+            'category'     => $request->category,
+            'sub_category' => $request->category === 'promosi-umkm' ? $request->sub_category : null,
+            'content'      => $request->content,
+            'image_path'   => $imagePath,
+            'created_by'   => Auth::id(),
+            'is_active'    => true,
+            'publish_at'   => $request->publish_at ?? today(),
+            'expire_at'    => $request->expire_at,
+        ]);
+
+        // Notif ke semua user
+        $this->notifyAllUsers($news);
+
+        return redirect()->route('admin.news.index')
+                         ->with('success', 'Berita berhasil dipublikasikan!');
     }
 
-    $news = News::create([
-        'title'        => $request->title,
-        'category'     => $request->category,
-        'sub_category' => $request->category === 'promosi-umkm' ? $request->sub_category : null,
-        'content'      => $request->content,
-        'image_path'   => $imagePath,
-        'created_by'   => Auth::id(),
-        'is_active'    => true,
-        'publish_at'   => $request->publish_at ?? today(),
-        'expire_at'    => $request->expire_at,
-    ]);
-
-    // Notif ke semua user
-    $this->notifyAllUsers($news);
-
-    return redirect()->route('admin.news.index')
-                     ->with('success', 'Berita berhasil dipublikasikan!');
-}
-
     private function notifyAllUsers(News $news): void
-{
-    $users = User::where('is_active', true)
-                 ->where('id', '!=', Auth::id())
-                 ->get();
+    {
+        $users = User::where('is_active', true)
+                     ->where('id', '!=', Auth::id())
+                     ->get();
 
-    $categoryLabel = News::CATEGORIES[$news->category] ?? 'Berita';
+        if ($users->isEmpty()) {
+            return;
+        }
 
-    $notifs = $users->map(fn($user) => [
-        'user_id'    => $user->id,
-        'type'       => 'news',
-        'title'      => '📰 ' . $categoryLabel . ' Baru',
-        'message'    => $news->title,
-        'link'       => route('news.show', $news->id),
-        'is_read'    => false,
-        'created_at' => now(),
-        'updated_at' => now(),
-    ])->toArray();
+        $categoryLabel = News::CATEGORIES[$news->category] ?? 'Berita';
 
-    Notification::insert($notifs);
-}
+        $notifs = $users->map(fn($user) => [
+            'user_id'    => $user->id,
+            'type'       => 'news',
+            'title'      => '📰 ' . $categoryLabel . ' Baru',
+            'message'    => $news->title,
+            'link'       => route('news.show', $news->id),
+            'is_read'    => false,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ])->toArray();
+
+        Notification::insert($notifs);
+
+        // Push notification — bulk insert() di atas tidak trigger Eloquent event,
+        // jadi pengiriman push harus dipanggil manual di sini.
+        NotificationFacade::send($users, new PushNotification(
+            $categoryLabel . ' Baru',
+            $news->title,
+            route('news.show', $news->id)
+        ));
+    }
 
     public function destroy($id)
     {

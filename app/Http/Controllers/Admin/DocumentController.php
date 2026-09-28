@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Grade;
+use App\Notifications\PushNotification;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 
 class DocumentController extends Controller
 {
@@ -120,6 +122,10 @@ class DocumentController extends Controller
                     })
                     ->get();
 
+        if ($users->isEmpty()) {
+            return;
+        }
+
         $notifs = $users->map(fn($user) => [
             'user_id'    => $user->id,
             'type'       => 'document',
@@ -132,6 +138,14 @@ class DocumentController extends Controller
         ])->toArray();
 
         \App\Models\Notification::insert($notifs);
+
+        // Push notification — bulk insert() di atas tidak trigger Eloquent event,
+        // jadi pengiriman push harus dipanggil manual di sini.
+        NotificationFacade::send($users, new PushNotification(
+            'Dokumen Baru',
+            "Dokumen baru ditambahkan: {$document->title}",
+            route('documents.show', $document->id)
+        ));
     }
 
     public function destroy($id)
@@ -152,46 +166,46 @@ class DocumentController extends Controller
     }
 
     public function acknowledgements($id)
-{
-    $document = Document::with(['reads.user'])->findOrFail($id);
+    {
+        $document = Document::with(['reads.user'])->findOrFail($id);
 
-    $query = \App\Models\User::where('is_active', true);
+        $query = \App\Models\User::where('is_active', true);
 
-    // Filter grade: hanya kalau min_grade_id tidak null
-    if ($document->min_grade_id) {
-        $query->whereHas('grade', function ($q) use ($document) {
-            $q->where('level', '<=', $document->minGrade->level);
+        // Filter grade: hanya kalau min_grade_id tidak null
+        if ($document->min_grade_id) {
+            $query->whereHas('grade', function ($q) use ($document) {
+                $q->where('level', '<=', $document->minGrade->level);
+            });
+        }
+
+        // Filter dept: hanya kalau department_id tidak null
+        if ($document->department_id) {
+            $query->where('department_id', $document->department_id);
+        }
+
+        // Filter jabatan: hanya kalau position_id tidak null
+        if ($document->position_id) {
+            $query->where('position_id', $document->position_id);
+        }
+
+        $users = $query->get();
+
+        $statuses = $users->map(function ($user) use ($document) {
+            $read = $document->reads->firstWhere('user_id', $user->id);
+            return [
+                'user'            => $user,
+                'read_at'         => $read?->read_at,
+                'acknowledged_at' => $read?->acknowledged_at,
+            ];
         });
+
+        $acknowledgedCount = $statuses->whereNotNull('acknowledged_at')->count();
+        $pendingCount      = $statuses->whereNull('acknowledged_at')->count();
+
+        return view('admin.documents.acknowledgements', compact(
+            'document', 'statuses', 'acknowledgedCount', 'pendingCount'
+        ));
     }
-
-    // Filter dept: hanya kalau department_id tidak null
-    if ($document->department_id) {
-        $query->where('department_id', $document->department_id);
-    }
-
-    // Filter jabatan: hanya kalau position_id tidak null
-    if ($document->position_id) {
-        $query->where('position_id', $document->position_id);
-    }
-
-    $users = $query->get();
-
-    $statuses = $users->map(function ($user) use ($document) {
-        $read = $document->reads->firstWhere('user_id', $user->id);
-        return [
-            'user'            => $user,
-            'read_at'         => $read?->read_at,
-            'acknowledged_at' => $read?->acknowledged_at,
-        ];
-    });
-
-    $acknowledgedCount = $statuses->whereNotNull('acknowledged_at')->count();
-    $pendingCount      = $statuses->whereNull('acknowledged_at')->count();
-
-    return view('admin.documents.acknowledgements', compact(
-        'document', 'statuses', 'acknowledgedCount', 'pendingCount'
-    ));
-}
 
     public function positionsByDepartment($departmentId)
     {

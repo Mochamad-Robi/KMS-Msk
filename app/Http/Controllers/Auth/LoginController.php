@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\AuditLog;
+use App\Notifications\PushNotification;
+use Illuminate\Support\Facades\Notification as NotificationFacade;
 
 class LoginController extends Controller
 {
@@ -121,6 +123,10 @@ class LoginController extends Controller
                 ->where('id', '!=', $birthdayUser->id)
                 ->get();
 
+            if ($allUsers->isEmpty()) {
+                continue;
+            }
+
             $notifs = $allUsers->map(fn($u) => [
                 'user_id'    => $u->id,
                 'type'       => 'birthday',
@@ -133,6 +139,14 @@ class LoginController extends Controller
             ])->toArray();
 
             Notification::insert($notifs);
+
+            // Push notification — bulk insert() di atas tidak trigger Eloquent event,
+            // jadi pengiriman push harus dipanggil manual di sini.
+            NotificationFacade::send($allUsers, new PushNotification(
+                'Ulang Tahun Karyawan',
+                "{$birthdayUser->name} berulang tahun hari ini. Yuk ucapkan selamat!",
+                route('news.show', $news->id)
+            ));
         }
     }
 }

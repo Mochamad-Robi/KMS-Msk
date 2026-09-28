@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Models\User;
 use App\Models\News;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\PushNotification;
 
 class DashboardController extends Controller
 {
@@ -38,7 +39,7 @@ class DashboardController extends Controller
                             ->take(5)
                             ->get();
 
-       $recentDocuments = Document::where('is_active', true)
+        $recentDocuments = Document::where('is_active', true)
                             ->where('type', 'pdf')
                             ->when(!$user->isSuperUser() && !$user->isAdmin(), function ($q) use ($user) {
                                 $q->where(function ($q2) use ($user) {
@@ -89,6 +90,13 @@ class DashboardController extends Controller
                     'message' => "Selamat ulang tahun, {$user->name}! Kamu punya hadiah spesial hari ini.",
                     'is_read' => false,
                 ]);
+
+                // Push hanya sekali per hari, dijaga oleh $alreadyNotifiedSelf di atas
+                $user->notify(new PushNotification(
+                    'Selamat Ulang Tahun!',
+                    "Selamat ulang tahun, {$user->name}! Kamu punya hadiah spesial hari ini.",
+                    route('dashboard')
+                ));
             }
 
             $otherUsers = User::where('is_active', true)
@@ -114,6 +122,10 @@ class DashboardController extends Controller
                     ]);
                 }
             }
+            // CATATAN: push untuk $otherUsers sengaja TIDAK dipasang di sini.
+            // Notifikasi ulang tahun karyawan sudah dikirim beserta push-nya di
+            // Auth\LoginController@generateBirthdayPosts(). Memasang push di sini
+            // akan membuat user menerima notifikasi ganda.
         }
 
         $this->sendDocumentReminders($user);
@@ -184,6 +196,13 @@ class DashboardController extends Controller
                     'link'    => route('documents.show', $document->id),
                     'is_read' => false,
                 ]);
+
+                // Push hanya sekali per 7 hari per dokumen, dijaga $alreadyReminded
+                $user->notify(new PushNotification(
+                    'Dokumen Belum Dibaca',
+                    "Kamu belum membaca dokumen: {$document->title}",
+                    route('documents.show', $document->id)
+                ));
             }
         }
     }

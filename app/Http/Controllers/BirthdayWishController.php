@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\PushNotification;
 
 class BirthdayWishController extends Controller
 {
@@ -44,6 +45,13 @@ class BirthdayWishController extends Controller
             'message' => "{$fromUser->name}: \"{$request->message}\"",
             'is_read' => false,
         ]);
+
+        // Push notification ke yang ulang tahun
+        $user->notify(new PushNotification(
+            'Ucapan Ulang Tahun',
+            "{$fromUser->name}: {$request->message}",
+            route('notifications.index')
+        ));
 
         return back()->with('success', 'Ucapan berhasil dikirim ke ' . $user->name . '! 🎉');
     }
