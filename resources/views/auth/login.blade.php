@@ -71,7 +71,10 @@
     text-align:center; padding:32px 24px;
     transition:opacity .45s ease, transform .7s var(--ease);
   }
+<<<<<<< HEAD
+=======
   /* Desktop: welcome memudar. Mobile: welcome naik sedikit & meredup di belakang sheet */
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   @media (min-width:1024px){
     .open .welcome{ opacity:0; transform:scale(.94); pointer-events:none; }
   }
@@ -138,7 +141,10 @@
   .btn-ghost:hover svg{ transform:translateX(4px); }
 
   /* ================= FORM ================= */
+<<<<<<< HEAD
+=======
   /* Desktop: kolom kanan. Mobile: bottom sheet */
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .form-col{
     position:absolute; z-index:30;
     display:flex; align-items:center; justify-content:center;
@@ -171,7 +177,10 @@
     .open .form-col{ transform:translateY(0); }
   }
 
+<<<<<<< HEAD
+=======
   /* handle sheet (mobile only) */
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .sheet-grip{ display:none; }
   @media (max-width:1023px){
     .sheet-grip{
@@ -182,7 +191,10 @@
 
   .form-box{ width:100%; max-width:352px; margin:0 auto; }
 
+<<<<<<< HEAD
+=======
   /* backdrop gelap di belakang sheet (mobile) */
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .scrim{
     position:absolute; inset:0; z-index:25;
     background:rgba(12,2,4,.45);
@@ -260,6 +272,51 @@
   .btn:hover::after{ animation:sheen .8s ease; }
   @keyframes sheen{ to{ left:150%; } }
 
+<<<<<<< HEAD
+  /* ===== Tombol install PWA ===== */
+  .btn-install{
+    display:none; align-items:center; justify-content:center; gap:8px;
+    width:100%; box-sizing:border-box; padding:12px 18px; margin-top:10px;
+    border:1.5px solid var(--line); border-radius:12px; cursor:pointer;
+    background:#fff; color:var(--ink);
+    font-family:'Sora',sans-serif; font-size:13.5px; font-weight:600;
+    transition:border-color .18s, color .18s, background .18s;
+  }
+  .btn-install.show{ display:flex; }
+  .btn-install:hover{ border-color:var(--maroon); color:var(--maroon); background:#FFF9F9; }
+  .btn-install:active{ transform:scale(.99); }
+
+  .ins-modal{
+    position:fixed; inset:0; z-index:100;
+    display:none; align-items:flex-end; justify-content:center;
+    background:rgba(12,2,4,.55); padding:0;
+  }
+  .ins-modal.show{ display:flex; }
+  @media (min-width:640px){
+    .ins-modal{ align-items:center; padding:20px; }
+  }
+  .ins-box{
+    width:100%; max-width:400px; background:#fff;
+    border-radius:22px 22px 0 0; padding:24px 22px 26px;
+    animation:insUp .42s var(--sheet);
+  }
+  @media (min-width:640px){
+    .ins-box{ border-radius:20px; animation:insPop .3s var(--ease); }
+  }
+  @keyframes insUp{ from{ transform:translateY(100%); } to{ transform:translateY(0); } }
+  @keyframes insPop{ from{ opacity:0; transform:scale(.96); } to{ opacity:1; transform:scale(1); } }
+
+  .ins-step{
+    display:flex; gap:12px; align-items:flex-start;
+    padding:11px 0; font-size:13.5px; line-height:1.5; color:var(--ink);
+  }
+  .ins-num{
+    width:24px; height:24px; border-radius:50%; flex-shrink:0;
+    background:var(--maroon); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:12px; font-weight:700;
+  }
+
   .chk{ width:16px;height:16px;border-radius:4px;cursor:pointer;accent-color:var(--maroon); }
 
   .alert{
@@ -274,12 +331,31 @@
     30%,50%,70%{transform:translateX(-3px)}40%,60%{transform:translateX(3px)}
   }
 
+=======
+  .chk{ width:16px;height:16px;border-radius:4px;cursor:pointer;accent-color:var(--maroon); }
+
+  .alert{
+    display:flex;gap:9px;align-items:flex-start;
+    padding:11px 13px;border-radius:12px;margin-bottom:14px;
+    background:#FCEEF0;border:1px solid #F2D2D8;color:#8F1F31;
+    font-size:13px;line-height:1.5;
+    animation:shake .42s cubic-bezier(.36,.07,.19,.97);
+  }
+  @keyframes shake{
+    10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}
+    30%,50%,70%{transform:translateX(-3px)}40%,60%{transform:translateX(3px)}
+  }
+
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .wIn{ opacity:0;transform:translateY(16px);animation:wUp .75s var(--ease) forwards; }
   @keyframes wUp{ to{opacity:1;transform:translateY(0)} }
   .w1{animation-delay:.15s}.w2{animation-delay:.30s}
   .w3{animation-delay:.44s}.w4{animation-delay:.58s}
 
+<<<<<<< HEAD
+=======
   /* tombol kembali: desktop pill kanan atas, mobile tombol X di sheet */
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .back{
     position:absolute; top:22px; right:26px; z-index:40;
     display:none; align-items:center; gap:7px;
@@ -504,12 +580,20 @@
             @error('captcha')<p class="text-[12px] mt-1" style="color:#B3344A">{{ $message }}</p>@enderror
           </div>
 
+<<<<<<< HEAD
+          <div class="flex items-center mb-4">
+=======
           <div class="flex items-center justify-between mb-4">
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
             <label class="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" name="remember" id="remember" class="chk">
               <span class="text-[13px]" style="color:var(--ink-soft)">Ingat saya</span>
             </label>
+<<<<<<< HEAD
+          </div>
+=======
             </div>
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
 
           <button type="submit" class="btn" id="submit-btn">
             <span id="btn-label">Masuk</span>
@@ -524,14 +608,49 @@
 
         </form>
 
+<<<<<<< HEAD
+        {{-- Tombol install aplikasi --}}
+        <button type="button" class="btn-install" id="btn-install">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/>
+          </svg>
+             <span id="btn-install-label">Pasang Aplikasi di HP</span>
+        </button>
+
+        <p class="text-center text-[10.5px] mt-5 leading-relaxed" style="color:#B0A49C">
+          &copy; {{ date('Y') }} PT Mitra Sendang Kemakmuran
+=======
         <p class="text-center text-[10.5px] mt-5 leading-relaxed" style="color:#B0A49C">
           &copy; {{ date('Y') }} PT Mitra Sendang Kemakmuran &nbsp;&middot;&nbsp;
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
         </p>
 
       </div>
     </div>
 
   </div>
+
+  {{-- ===== Modal panduan install manual ===== --}}
+  <div class="ins-modal" id="ins-modal">
+    <div class="ins-box">
+      <div style="text-align:center;margin-bottom:18px">
+        <img src="{{ asset('assets/icon-192.png') }}" alt=""
+             style="width:56px;height:56px;border-radius:14px;object-fit:contain;margin:0 auto 12px;display:block;box-shadow:0 4px 14px -4px rgba(0,0,0,.25)">
+        <h3 class="display" style="font-size:17px;font-weight:700;margin-bottom:4px">Install MSK Pintar</h3>
+        <p style="font-size:12.5px;color:var(--ink-soft)" id="ins-sub">Ikuti langkah berikut</p>
+      </div>
+
+      <div id="ins-steps"></div>
+
+      <button type="button" id="ins-close"
+              style="width:100%;margin-top:16px;padding:12px;border:none;border-radius:12px;
+                     background:#F1EAE3;color:var(--ink-soft);font-size:13.5px;font-weight:600;cursor:pointer">
+        Mengerti
+      </button>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -576,7 +695,11 @@
 
   sheet.addEventListener('touchstart', function(e){
     if(!isMobile() || !wrap.classList.contains('open')) return;
+<<<<<<< HEAD
+    if(sheet.scrollTop > 0) return;
+=======
     if(sheet.scrollTop > 0) return;          // biarkan scroll normal dulu
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
     startY = e.touches[0].clientY;
     dragging = true;
     sheet.style.transition = 'none';
@@ -630,6 +753,100 @@
     document.getElementById('btn-arrow').classList.add('hidden');
     document.getElementById('btn-spin').classList.remove('hidden');
   });
+<<<<<<< HEAD
+
+  // ===================== INSTALL PWA =====================
+  let deferredPrompt = null;
+  const insBtn   = document.getElementById('btn-install');
+  const insLabel = document.getElementById('btn-install-label');
+  const insModal = document.getElementById('ins-modal');
+  const insSteps = document.getElementById('ins-steps');
+  const insSub   = document.getElementById('ins-sub');
+
+  const ua    = navigator.userAgent || '';
+  const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+                    || window.navigator.standalone === true;
+
+  function steps(list){
+    insSteps.innerHTML = list.map(function(t, i){
+      return '<div class="ins-step"><span class="ins-num">' + (i+1) + '</span><span>' + t + '</span></div>';
+    }).join('');
+  }
+
+  function showGuide(){
+    if (isIOS){
+      insSub.textContent = 'Di iPhone / iPad (Safari)';
+      steps([
+        'Ketuk tombol <strong>Bagikan</strong> di bawah layar Safari (ikon kotak dengan panah ke atas).',
+        'Gulir ke bawah, pilih <strong>"Tambahkan ke Layar Utama"</strong>.',
+        'Ketuk <strong>Tambah</strong> di kanan atas. Ikon MSK Pintar akan muncul di layar utama.'
+      ]);
+    } else {
+      insSub.textContent = 'Di Android (Chrome)';
+      steps([
+        'Ketuk ikon <strong>tiga titik</strong> di kanan atas Chrome.',
+        'Pilih <strong>"Tambahkan ke layar Utama"</strong> atau <strong>"Install aplikasi"</strong>.',
+        'Ketuk <strong>Install</strong> untuk mengonfirmasi.'
+      ]);
+    }
+    insModal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideGuide(){
+    insModal.classList.remove('show');
+    if (!wrap.classList.contains('open') || !isMobile()) document.body.style.overflow = '';
+  }
+
+  document.getElementById('ins-close').addEventListener('click', hideGuide);
+  insModal.addEventListener('click', function(e){ if (e.target === insModal) hideGuide(); });
+
+  // Chrome mengirim event ini kalau kriteria PWA terpenuhi
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    if (insBtn && !isStandalone){
+      insLabel.textContent = 'Pasang Aplikasi di HP';
+      insBtn.classList.add('show');
+    }
+  });
+
+  window.addEventListener('appinstalled', function(){
+    deferredPrompt = null;
+    if (insBtn) insBtn.classList.remove('show');
+  });
+
+  if (insBtn){
+    insBtn.addEventListener('click', async function(){
+      if (deferredPrompt){
+        deferredPrompt.prompt();
+        const res = await deferredPrompt.userChoice;
+        if (res.outcome === 'accepted') insBtn.classList.remove('show');
+        deferredPrompt = null;
+      } else {
+        showGuide();
+      }
+    });
+
+    // Tetap tampilkan tombol walau Chrome belum kirim event,
+    // supaya user bisa install manual lewat panduan.
+    if (!isStandalone){
+      if (isIOS){
+        insLabel.textContent = 'Pasang Aplikasi di iPhone';
+        insBtn.classList.add('show');
+      } else {
+        setTimeout(function(){
+          if (!deferredPrompt){
+            insLabel.textContent = 'Cara Install Aplikasi';
+            insBtn.classList.add('show');
+          }
+        }, 1800);
+      }
+    }
+  }
+=======
+>>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
 })();
 </script>
 @endsection
