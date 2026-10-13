@@ -71,10 +71,7 @@
     text-align:center; padding:32px 24px;
     transition:opacity .45s ease, transform .7s var(--ease);
   }
-<<<<<<< HEAD
-=======
   /* Desktop: welcome memudar. Mobile: welcome naik sedikit & meredup di belakang sheet */
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   @media (min-width:1024px){
     .open .welcome{ opacity:0; transform:scale(.94); pointer-events:none; }
   }
@@ -141,10 +138,7 @@
   .btn-ghost:hover svg{ transform:translateX(4px); }
 
   /* ================= FORM ================= */
-<<<<<<< HEAD
-=======
   /* Desktop: kolom kanan. Mobile: bottom sheet */
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .form-col{
     position:absolute; z-index:30;
     display:flex; align-items:center; justify-content:center;
@@ -177,10 +171,7 @@
     .open .form-col{ transform:translateY(0); }
   }
 
-<<<<<<< HEAD
-=======
   /* handle sheet (mobile only) */
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .sheet-grip{ display:none; }
   @media (max-width:1023px){
     .sheet-grip{
@@ -191,10 +182,7 @@
 
   .form-box{ width:100%; max-width:352px; margin:0 auto; }
 
-<<<<<<< HEAD
-=======
   /* backdrop gelap di belakang sheet (mobile) */
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .scrim{
     position:absolute; inset:0; z-index:25;
     background:rgba(12,2,4,.45);
@@ -272,7 +260,6 @@
   .btn:hover::after{ animation:sheen .8s ease; }
   @keyframes sheen{ to{ left:150%; } }
 
-<<<<<<< HEAD
   /* ===== Tombol install PWA ===== */
   .btn-install{
     display:none; align-items:center; justify-content:center; gap:8px;
@@ -331,31 +318,12 @@
     30%,50%,70%{transform:translateX(-3px)}40%,60%{transform:translateX(3px)}
   }
 
-=======
-  .chk{ width:16px;height:16px;border-radius:4px;cursor:pointer;accent-color:var(--maroon); }
-
-  .alert{
-    display:flex;gap:9px;align-items:flex-start;
-    padding:11px 13px;border-radius:12px;margin-bottom:14px;
-    background:#FCEEF0;border:1px solid #F2D2D8;color:#8F1F31;
-    font-size:13px;line-height:1.5;
-    animation:shake .42s cubic-bezier(.36,.07,.19,.97);
-  }
-  @keyframes shake{
-    10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}
-    30%,50%,70%{transform:translateX(-3px)}40%,60%{transform:translateX(3px)}
-  }
-
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .wIn{ opacity:0;transform:translateY(16px);animation:wUp .75s var(--ease) forwards; }
   @keyframes wUp{ to{opacity:1;transform:translateY(0)} }
   .w1{animation-delay:.15s}.w2{animation-delay:.30s}
   .w3{animation-delay:.44s}.w4{animation-delay:.58s}
 
-<<<<<<< HEAD
-=======
   /* tombol kembali: desktop pill kanan atas, mobile tombol X di sheet */
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
   .back{
     position:absolute; top:22px; right:26px; z-index:40;
     display:none; align-items:center; gap:7px;
@@ -580,20 +548,12 @@
             @error('captcha')<p class="text-[12px] mt-1" style="color:#B3344A">{{ $message }}</p>@enderror
           </div>
 
-<<<<<<< HEAD
           <div class="flex items-center mb-4">
-=======
-          <div class="flex items-center justify-between mb-4">
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
             <label class="flex items-center gap-2 cursor-pointer select-none">
               <input type="checkbox" name="remember" id="remember" class="chk">
               <span class="text-[13px]" style="color:var(--ink-soft)">Ingat saya</span>
             </label>
-<<<<<<< HEAD
           </div>
-=======
-            </div>
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
 
           <button type="submit" class="btn" id="submit-btn">
             <span id="btn-label">Masuk</span>
@@ -608,22 +568,17 @@
 
         </form>
 
-<<<<<<< HEAD
         {{-- Tombol install aplikasi --}}
         <button type="button" class="btn-install" id="btn-install">
           <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/>
           </svg>
-             <span id="btn-install-label">Pasang Aplikasi di HP</span>
+          <span id="btn-install-label">Pasang Aplikasi di HP</span>
         </button>
 
         <p class="text-center text-[10.5px] mt-5 leading-relaxed" style="color:#B0A49C">
           &copy; {{ date('Y') }} PT Mitra Sendang Kemakmuran
-=======
-        <p class="text-center text-[10.5px] mt-5 leading-relaxed" style="color:#B0A49C">
-          &copy; {{ date('Y') }} PT Mitra Sendang Kemakmuran &nbsp;&middot;&nbsp;
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
         </p>
 
       </div>
@@ -695,11 +650,7 @@
 
   sheet.addEventListener('touchstart', function(e){
     if(!isMobile() || !wrap.classList.contains('open')) return;
-<<<<<<< HEAD
     if(sheet.scrollTop > 0) return;
-=======
-    if(sheet.scrollTop > 0) return;          // biarkan scroll normal dulu
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
     startY = e.touches[0].clientY;
     dragging = true;
     sheet.style.transition = 'none';
@@ -753,7 +704,6 @@
     document.getElementById('btn-arrow').classList.add('hidden');
     document.getElementById('btn-spin').classList.remove('hidden');
   });
-<<<<<<< HEAD
 
   // ===================== INSTALL PWA =====================
   let deferredPrompt = null;
@@ -838,15 +788,13 @@
       } else {
         setTimeout(function(){
           if (!deferredPrompt){
-            insLabel.textContent = 'Cara Install Aplikasi';
+            insLabel.textContent = 'Pasang Aplikasi di HP';
             insBtn.classList.add('show');
           }
         }, 1800);
       }
     }
   }
-=======
->>>>>>> 0395cd70534694c110d373ecc72d225332911ab7
 })();
 </script>
 @endsection
