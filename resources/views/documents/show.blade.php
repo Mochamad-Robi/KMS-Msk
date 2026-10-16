@@ -29,7 +29,7 @@
 @section('content')
 
     {{-- ===================================================================
-         MODAL PERINGATAN KERAHASIAAN DOKUMEN — blocking, wajib di-OK dulu
+         MODAL PERINGATAN KERAHASIAAN DOKUMEN â€” blocking, wajib di-OK dulu
          =================================================================== --}}
     <div id="confidentiality-modal"
          class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
@@ -98,7 +98,7 @@
     </div>
 
     {{-- ===================================================================
-         KONTEN DOKUMEN — disembunyikan sampai modal di-OK
+         KONTEN DOKUMEN â€” disembunyikan sampai modal di-OK
          =================================================================== --}}
     <div id="document-content" class="hidden">
 
@@ -107,7 +107,7 @@
             <div>
                 <a href="javascript:history.back()"
                    class="text-sm text-gray-400 hover:text-primary-700 flex items-center gap-1 mb-2">
-                    ← Kembali
+                    â† Kembali
                 </a>
                 <h2 class="text-lg font-bold text-gray-800 dark:text-gray-100">{{ $document->title }}</h2>
                 <p class="text-gray-400 text-xs mt-0.5 capitalize">
@@ -117,13 +117,13 @@
             <div class="flex items-center gap-2">
                 <span class="text-sm px-3 py-1 rounded-full font-medium
                     {{ $document->isReadBy(Auth::user()) ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500' }}">
-                    {{ $document->isReadBy(Auth::user()) ? '✓ Sudah Dibaca' : '● Belum Dibaca' }}
+                    {{ $document->isReadBy(Auth::user()) ? 'âœ“ Sudah Dibaca' : 'â— Belum Dibaca' }}
                 </span>
                 @if($document->requires_acknowledgement)
                     @if($document->isAcknowledgedBy(Auth::user()))
-                        <span class="text-sm px-3 py-1 rounded-full font-medium bg-blue-50 text-blue-600">✓ Sudah Acknowledge</span>
+                        <span class="text-sm px-3 py-1 rounded-full font-medium bg-blue-50 text-blue-600">âœ“ Sudah Acknowledge</span>
                     @else
-                        <span class="text-sm px-3 py-1 rounded-full font-medium bg-red-50 text-red-500">⚠ Perlu Acknowledge</span>
+                        <span class="text-sm px-3 py-1 rounded-full font-medium bg-red-50 text-red-500">âš  Perlu Acknowledge</span>
                     @endif
                 @endif
             </div>
@@ -176,7 +176,7 @@
                         @endfor
                     </div>
                     
-                    {{-- Container PDF — dirender via PDF.js (canvas) setelah user klik "Buka Dokumen", TANPA toolbar bawaan browser --}}
+                    {{-- Container PDF â€” dirender via PDF.js (canvas) setelah user klik "Buka Dokumen", TANPA toolbar bawaan browser --}}
                     <div id="document-frame-container" data-pdf-url="{{ route('documents.pdf', $document->id) }}"
                          style="max-height: 85vh; overflow-y: auto;"></div>
 
@@ -192,7 +192,7 @@
                             </div>
                         @endfor
                     </div>
-                     {{-- Container gambar — img baru dibuat via JS setelah user klik "Buka Dokumen" --}}
+                     {{-- Container gambar â€” img baru dibuat via JS setelah user klik "Buka Dokumen" --}}
                     <div id="document-frame-container" data-pdf-url="{{ route('documents.pdf', $document->id) }}"
                          class="flex items-center justify-center p-6" style="min-height: 60vh;"></div>
 
@@ -248,7 +248,7 @@
                 </a>
             @endif
             <p class="text-xs text-gray-300 dark:text-gray-600 mt-4">
-                {{ $watermark }} — dokumen bersifat rahasia
+                {{ $watermark }} â€” dokumen bersifat rahasia
             </p>
         </div>
 
@@ -346,23 +346,43 @@
             container.style.background = '#525659';
             container.style.padding = '16px 0';
 
+                        // Render pada resolusi fisik layar supaya teks tidak buram.
+            // Dibatasi 3x agar PDF besar tidak memakan memori berlebihan.
+            const dpr = Math.min(window.devicePixelRatio || 1, 3);
+
             for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
                 const page = await pdf.getPage(pageNum);
                 const containerWidth = container.clientWidth || 800;
                 const unscaledViewport = page.getViewport({ scale: 1 });
-                const scale = (containerWidth - 32) / unscaledViewport.width;
-                const viewport = page.getViewport({ scale: scale });
+
+                // Skala tampilan (CSS)
+                const cssScale = (containerWidth - 32) / unscaledViewport.width;
+                // Skala render sebenarnya (lebih tinggi = lebih tajam)
+                const renderScale = cssScale * dpr;
+
+                const cssViewport    = page.getViewport({ scale: cssScale });
+                const renderViewport = page.getViewport({ scale: renderScale });
 
                 const canvas = document.createElement('canvas');
                 canvas.className = 'mx-auto block shadow-lg mb-4 bg-white';
                 canvas.oncontextmenu = () => false;
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
 
-                await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
+                // Ukuran buffer canvas = resolusi tinggi
+                canvas.width  = Math.floor(renderViewport.width);
+                canvas.height = Math.floor(renderViewport.height);
+
+                // Ukuran tampilan di layar = ukuran normal
+                canvas.style.width  = Math.floor(cssViewport.width) + 'px';
+                canvas.style.height = Math.floor(cssViewport.height) + 'px';
+
+                await page.render({
+                    canvasContext: canvas.getContext('2d', { alpha: false }),
+                    viewport: renderViewport
+                }).promise;
+
                 container.appendChild(canvas);
-            }
-        } catch (err) {
+            }       
+		 } catch (err) {
             console.error('PDF.js render error:', err);
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-16 px-6">
@@ -527,7 +547,7 @@
             }
         });
 
-                // Klik "Buka Dokumen" — tutup modal, tampilkan konten, baru buat elemen file (iframe/img) dari nol
+                // Klik "Buka Dokumen" â€” tutup modal, tampilkan konten, baru buat elemen file (iframe/img) dari nol
         bukaBtn.addEventListener('click', function () {
             if (bukaBtn.disabled) return;
 
@@ -558,7 +578,7 @@
             }
         });
 
-        // Klik "Batal" — dokumen tidak dibuka, kembali ke halaman list kategori
+        // Klik "Batal" â€” dokumen tidak dibuka, kembali ke halaman list kategori
         batalBtn.addEventListener('click', function () {
             window.location.href = "{{ $backRoute }}";
         });

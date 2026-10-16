@@ -16,13 +16,18 @@ use Illuminate\Support\Facades\Notification as NotificationFacade;
 
 class DocumentController extends Controller
 {
-    public function index()
+        public function index()
     {
         $documents = Document::with(['uploader', 'department'])
                         ->latest()
                         ->paginate(15);
 
-        return view('admin.documents.index', compact('documents'));
+        // Dibutuhkan oleh modal upload di halaman index
+        $departments = Department::orderBy('name')->get();
+        $positions   = Position::orderBy('name')->get();
+        $grades      = Grade::active()->ordered()->get();
+
+        return view('admin.documents.index', compact('documents', 'departments', 'positions', 'grades'));
     }
 
     public function create()
@@ -103,18 +108,24 @@ class DocumentController extends Controller
                     ->where(function ($q) use ($document) {
                         // Admin & super-user selalu dapat notif
                         $q->whereHas('role', fn($r) => $r->whereIn('slug', ['admin', 'super-user']))
+
+                          // ATAU user yang memenuhi filter 3 layer dokumen.
+                          // whereRaw('1 = 1') dipakai sebagai dasar supaya grup ini tetap
+                          // bernilai TRUE kalau SEMUA filter null (dokumen untuk semua orang).
+                          // Tanpa ini, grup jadi kosong dan hanya admin yang dapat notif.
                           ->orWhere(function ($q2) use ($document) {
-                              // Filter grade: skip kalau min_grade_id null = semua grade dapat notif
-                              $q2->when($document->min_grade_id, function ($q3) use ($document) {
-                                      $q3->whereHas('grade', function ($q4) use ($document) {
-                                          $q4->where('level', '<=', $document->minGrade->level);
-                                      });
-                                  })
-                                 // Filter dept
+                              $q2->whereRaw('1 = 1')
+                                 // Filter grade (null = semua grade)
+                                 ->when($document->min_grade_id, function ($q3) use ($document) {
+                                     $q3->whereHas('grade', function ($q4) use ($document) {
+                                         $q4->where('level', '<=', $document->minGrade->level);
+                                     });
+                                 })
+                                 // Filter departemen (null = semua dept)
                                  ->when($document->department_id, function ($q3) use ($document) {
                                      $q3->where('department_id', $document->department_id);
                                  })
-                                 // Filter jabatan
+                                 // Filter jabatan (null = semua jabatan)
                                  ->when($document->position_id, function ($q3) use ($document) {
                                      $q3->where('position_id', $document->position_id);
                                  });
@@ -129,7 +140,7 @@ class DocumentController extends Controller
         $notifs = $users->map(fn($user) => [
             'user_id'    => $user->id,
             'type'       => 'document',
-            'title'      => '📄 Dokumen Baru',
+            'title'      => '?? Dokumen Baru',
             'message'    => "Dokumen baru telah ditambahkan: \"{$document->title}\"",
             'link'       => route('documents.show', $document->id),
             'is_read'    => false,
@@ -215,4 +226,4 @@ class DocumentController extends Controller
 
         return response()->json($positions);
     }
-}
+}	

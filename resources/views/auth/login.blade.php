@@ -772,7 +772,7 @@
       if (deferredPrompt){
         deferredPrompt.prompt();
         const res = await deferredPrompt.userChoice;
-        if (res.outcome === 'accepted') insBtn.classList.remove('show');
+        if (res.outcome === 'accepted') insBtn.classList.remo ve('show');
         deferredPrompt = null;
       } else {
         showGuide();
@@ -794,7 +794,7 @@
         }, 1800);
       }
     }
-  }
+  } 
 })();
 </script>
 @endsection
